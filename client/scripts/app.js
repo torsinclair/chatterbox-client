@@ -30,7 +30,14 @@ var friends = [];
 setInterval(function() {
   var isLogging = lastId ? false : true;
 
-  $.get('https://api.parse.com/1/classes/messages', function(response, status) {
+  var url = 'https://api.parse.com/1/classes/messages';
+  if (!(room === undefined || room === 'lobby')) {
+    var formatting = '?where={"roomname":"' + room + '"}';
+    url += encodeURI(formatting);
+    console.log(url);
+  }
+
+  $.get(url, function(response, status) {
     messages = response.results;
     console.log(status);
 
@@ -145,3 +152,7 @@ var refreshFriends = function(){
 //   text: 'testing',
 //   roomname: '4chan'
 // };
+// var test;
+// $.get('https://api.parse.com/1/classes/messages', function(response, status) {
+//   test = response;
+// }
