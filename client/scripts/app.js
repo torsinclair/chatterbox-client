@@ -23,6 +23,8 @@
 
 var messages;
 var lastId;
+var room;
+var appendedRooms = ['lobby'];
 
 setInterval(function() {
   var isLogging = lastId ? false : true;
@@ -38,19 +40,23 @@ setInterval(function() {
           isLogging = true;
         }
         continue;
-      } else {
-        var content = $('<p></p>');
-        content.text(message.text);
-        // make a h4 and add the username to it
-        var username = $('<h4></h4>');
-        username.text(message.username);
-        // make a div for the chat and add the above to it
-        var chat = $('<div class="chat"></div>');
-        chat.append(username);
-        chat.append(content);
-        // attach div to the dom
-        chat.prependTo($('#chats'));
-      }
+      } 
+
+      if (!(room === undefined || room === 'lobby') && (message.roomname !== room)) continue;
+      console.log('test');
+
+      addRoom(message);
+      var content = $('<p></p>');
+      content.text(message.text);
+      // make a h4 and add the username to it
+      var username = $('<h4></h4>');
+      username.text(message.username);
+      // make a div for the chat and add the above to it
+      var chat = $('<div class="chat"></div>');
+      chat.append(username);
+      chat.append(content);
+      // attach div to the dom
+      chat.prependTo($('#chats'));     
     }
 
     lastId = messages[0].objectId;
@@ -67,7 +73,7 @@ $(document).ready(function() {
     var message = {
       username: userName,
       text: text,
-      roomname: 'hr40'
+      roomname: $('#room').val()
     };
 
     $.post('https://api.parse.com/1/classes/messages', JSON.stringify(message), function() {
@@ -90,8 +96,27 @@ $(document).ready(function() {
     // });
     
   });
+
+  $('#room').change(function() {
+    lastId = undefined;
+    room = $(this).val();
+    $('.chat').remove();
+  });
 });
 
+var addRoom = function(message) {
+  var roomName = message.roomname;
+
+
+  if (appendedRooms.indexOf(roomName) === -1) {
+    appendedRooms.push(roomName);
+
+    var roomNode = $('<option value="' + roomName + '"></option>');
+    roomNode.text(roomName);
+    $('#room').append(roomNode);
+  }
+
+};
 
 // var message = {
 //   username: 'tor',
