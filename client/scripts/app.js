@@ -25,6 +25,7 @@ var messages;
 var lastId;
 var room;
 var appendedRooms = ['lobby'];
+var friends = [];
 
 setInterval(function() {
   var isLogging = lastId ? false : true;
@@ -43,13 +44,12 @@ setInterval(function() {
       } 
 
       if (!(room === undefined || room === 'lobby') && (message.roomname !== room)) continue;
-      console.log('test');
 
       addRoom(message);
       var content = $('<p></p>');
       content.text(message.text);
       // make a h4 and add the username to it
-      var username = $('<h4></h4>');
+      var username = $('<a href="#"></a>');
       username.text(message.username);
       // make a div for the chat and add the above to it
       var chat = $('<div class="chat"></div>');
@@ -59,6 +59,7 @@ setInterval(function() {
       chat.prependTo($('#chats'));     
     }
 
+    refreshFriends();
     lastId = messages[0].objectId;
   });
 }, 1000);
@@ -102,6 +103,16 @@ $(document).ready(function() {
     room = $(this).val();
     $('.chat').remove();
   });
+
+  $('body').on('click', 'a', function(e) {
+    e.preventDefault();
+    var friend = $(this).text();
+
+    if (friends.indexOf(friend) === -1) {
+      friends.push(friend);
+      refreshFriends();
+    }
+  });
 });
 
 var addRoom = function(message) {
@@ -116,6 +127,17 @@ var addRoom = function(message) {
     $('#room').append(roomNode);
   }
 
+};
+
+var refreshFriends = function(){
+  $('.chat').each(function(){
+    var friend = $(this).find('a').text();
+
+    if (friends.indexOf(friend) > -1) {
+      $(this).find('a').addClass('friend');
+      $(this).find('p').addClass('friend');
+    }
+  });
 };
 
 // var message = {
