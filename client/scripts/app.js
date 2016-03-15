@@ -34,7 +34,6 @@ setInterval(function() {
   if (!(room === undefined || room === 'lobby')) {
     var formatting = '?where={"roomname":"' + room + '"}';
     url += encodeURI(formatting);
-    console.log(url);
   }
 
   $.get(url, function(response, status) {
@@ -52,18 +51,7 @@ setInterval(function() {
 
       if (!(room === undefined || room === 'lobby') && (message.roomname !== room)) continue;
 
-      addRoom(message);
-      var content = $('<p></p>');
-      content.text(message.text);
-      // make a h4 and add the username to it
-      var username = $('<a href="#"></a>');
-      username.text(message.username);
-      // make a div for the chat and add the above to it
-      var chat = $('<div class="chat"></div>');
-      chat.append(username);
-      chat.append(content);
-      // attach div to the dom
-      chat.prependTo($('#current'));     
+      addChat(message, $('#current'));   
     }
 
     refreshFriends();
@@ -108,7 +96,7 @@ $(document).ready(function() {
   $('#room').change(function() {
     lastId = undefined;
     room = $(this).val();
-    $('.chat').remove();
+    $('#current .chat').remove();
   });
 
   $('body').on('click', 'a', function(e) {
@@ -120,6 +108,8 @@ $(document).ready(function() {
       refreshFriends();
     }
   });
+
+  $('.make-tab').click(makeTab);
 });
 
 var addRoom = function(message) {
@@ -145,6 +135,55 @@ var refreshFriends = function(){
       $(this).find('p').addClass('friend');
     }
   });
+};
+
+var makeTab = function() {
+  if (room === undefined || room === 'lobby') return;
+
+  var tabName = room;
+  var newDiv = $('<div class="tab-pane" id="' + tabName + '"></div>');
+  var newTab = $('<li><a href="#' + tabName + '" data-toggle="tab">' + tabName + '</a></li>');
+
+  $('.tab-content').append(newDiv);
+  $('.nav').append(newTab);
+
+  var savedMessages = [];
+
+  var url = 'https://api.parse.com/1/classes/messages';
+  if (!(tabName === undefined || tabName === 'lobby')) {
+    var formatting = '?where={"roomname":"' + tabName + '"}';
+    url += encodeURI(formatting);
+  }
+
+  var refreshMessages = function() {
+    $.get(url, function(response) {
+      var receivedMessages = response.results;
+      _.each(receivedMessages, function(message) {
+        var messageId = message.objectId;
+        if (savedMessages.indexOf(messageId) === -1) {
+          addChat(message, newDiv);
+          savedMessages.push(messageId);
+        }
+      });
+    });
+  };
+
+  setInterval(refreshMessages, 1000);
+};
+
+var addChat = function(message, location) {
+  addRoom(message);
+  var content = $('<p></p>');
+  content.text(message.text);
+  // make a h4 and add the username to it
+  var username = $('<a href="#"></a>');
+  username.text(message.username);
+  // make a div for the chat and add the above to it
+  var chat = $('<div class="chat"></div>');
+  chat.append(username);
+  chat.append(content);
+  // attach div to the dom
+  chat.prependTo(location);   
 };
 
 // var message = {

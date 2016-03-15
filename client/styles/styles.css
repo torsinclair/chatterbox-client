@@ -88,3 +88,12 @@ form input[type=text] {
 .friend {
     font-weight: bold;
 }
+
+.make-tab {
+    padding: 10px 20px;
+    color: white;
+    background-color: #1cabe6;
+}
+.make-tab:hover {
+    color: white;
+}
