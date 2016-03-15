@@ -79,6 +79,13 @@ $(document).ready(function() {
   });
 
   $('.make-tab').click(makeTab);
+
+  $('body').on('click', '.glyphicon', function(e) {
+    $(this).toggleClass('like');
+  });
+
+
+
 });
 
 var addRoom = function(message) {
@@ -165,6 +172,12 @@ var makeTab = function() {
 
 var addChat = function(message, location) {
   addRoom(message);
+
+  // make a h4 and add the username to it
+  var username = $('<a href="#"></a>');
+  username.text(message.username);
+
+  // add content
   var content = $('<p></p>');  
   content.text(message.text);
 
@@ -173,14 +186,15 @@ var addChat = function(message, location) {
   var newMoment = new moment(message.createdAt);
   time.text(newMoment.fromNow());
 
-  // make a h4 and add the username to it
-  var username = $('<a href="#"></a>');
-  username.text(message.username);
+  // add an icon to message
+  var heart = $('<span class="glyphicon glyphicon-heart"></span>');
+
   // make a div for the chat and add the above to it
   var chat = $('<div class="chat"></div>');
   chat.append(username);
   chat.append(time);
   chat.append(content);
+  chat.append(heart);
   // attach div to the dom
   chat.prependTo(location);   
 };

@@ -102,3 +102,11 @@ time {
     float: right;
     font-style: italic;
 }
+
+.glyphicon {
+    color: #333;
+}
+
+.like {
+    color: red;
+}
