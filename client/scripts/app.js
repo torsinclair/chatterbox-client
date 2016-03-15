@@ -141,8 +141,9 @@ var makeTab = function() {
   if (room === undefined || room === 'lobby') return;
 
   var tabName = room;
+  var tabName = room.replace(/ /g, '-');
   var newDiv = $('<div class="tab-pane" id="' + tabName + '"></div>');
-  var newTab = $('<li><a href="#' + tabName + '" data-toggle="tab">' + tabName + '</a></li>');
+  var newTab = $('<li><a href="#' + tabName + '" data-toggle="tab">' + room + '</a></li>');
 
   $('.tab-content').append(newDiv);
   $('.nav').append(newTab);
@@ -151,7 +152,7 @@ var makeTab = function() {
 
   var url = 'https://api.parse.com/1/classes/messages';
   if (!(tabName === undefined || tabName === 'lobby')) {
-    var formatting = '?where={"roomname":"' + tabName + '"}';
+    var formatting = '?where={"roomname":"' + room + '"}';
     url += encodeURI(formatting);
   }
 
