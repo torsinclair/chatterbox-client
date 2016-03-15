@@ -6,21 +6,6 @@
 //   roomname: '4chan'
 // };
 
-// $.ajax({
-//   // This is the url you should use to communicate with the parse API server.
-//   url: 'https://api.parse.com/1/classes/messages',
-//   type: 'POST',
-//   data: JSON.stringify(message),
-//   contentType: 'application/json',
-//   success: function (data) {
-//     console.log('chatterbox: Message sent');
-//   },
-//   error: function (data) {
-//     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-//     console.error('chatterbox: Failed to send message', data);
-//   }
-// });
-
 var messages;
 var lastId;
 var room;
@@ -75,22 +60,6 @@ $(document).ready(function() {
     $.post('https://api.parse.com/1/classes/messages', JSON.stringify(message), function() {
       console.log('Send succeeded');
     });
-
-    // $.ajax({
-    //   // This is the url you should use to communicate with the parse API server.
-    //   url: 'https://api.parse.com/1/classes/messages',
-    //   type: 'POST',
-    //   data: JSON.stringify(message),
-    //   contentType: 'application/json',
-    //   success: function (data) {
-    //     console.log('chatterbox: Message sent');
-    //   },
-    //   error: function (data) {
-    //     // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-    //     console.error('chatterbox: Failed to send message', data);
-    //   }
-    // });
-    
   });
 
   $('#room').change(function() {
@@ -159,13 +128,14 @@ var makeTab = function() {
   var refreshMessages = function() {
     $.get(url, function(response) {
       var receivedMessages = response.results;
-      _.each(receivedMessages, function(message) {
+      for (var i = receivedMessages.length - 1; i >= 0; i--) {
+        var message = receivedMessages[i];
         var messageId = message.objectId;
         if (savedMessages.indexOf(messageId) === -1) {
           addChat(message, newDiv);
           savedMessages.push(messageId);
         }
-      });
+      };
     });
   };
 
@@ -186,13 +156,3 @@ var addChat = function(message, location) {
   // attach div to the dom
   chat.prependTo(location);   
 };
-
-// var message = {
-//   username: 'tor',
-//   text: 'testing',
-//   roomname: '4chan'
-// };
-// var test;
-// $.get('https://api.parse.com/1/classes/messages', function(response, status) {
-//   test = response;
-// }
