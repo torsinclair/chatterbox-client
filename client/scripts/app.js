@@ -165,14 +165,21 @@ var makeTab = function() {
 
 var addChat = function(message, location) {
   addRoom(message);
-  var content = $('<p></p>');
+  var content = $('<p></p>');  
   content.text(message.text);
+
+  // find time of message
+  var time = $('<time></time>');
+  var newMoment = new moment(message.createdAt);
+  time.text(newMoment.fromNow());
+
   // make a h4 and add the username to it
   var username = $('<a href="#"></a>');
   username.text(message.username);
   // make a div for the chat and add the above to it
   var chat = $('<div class="chat"></div>');
   chat.append(username);
+  chat.append(time);
   chat.append(content);
   // attach div to the dom
   chat.prependTo(location);   
