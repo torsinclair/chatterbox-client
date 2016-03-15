@@ -112,7 +112,7 @@ var makeTab = function() {
   var tabName = room;
   var tabName = room.replace(/ /g, '-');
   var newDiv = $('<div class="tab-pane" id="' + tabName + '"></div>');
-  var newTab = $('<li><a href="#' + tabName + '" data-toggle="tab">' + room + '</a></li>');
+  var newTab = $('<li><a href="#' + tabName + '" data-toggle="tab">' + room + '<span></span></a></li>');
 
   $('.tab-content').append(newDiv);
   $('.nav').append(newTab);
@@ -126,6 +126,9 @@ var makeTab = function() {
   }
 
   var refreshMessages = function() {
+    var isFirstCall = savedMessages.length === 0;
+    // debugger;
+
     $.get(url, function(response) {
       var receivedMessages = response.results;
       for (var i = receivedMessages.length - 1; i >= 0; i--) {
@@ -133,11 +136,29 @@ var makeTab = function() {
         var messageId = message.objectId;
         if (savedMessages.indexOf(messageId) === -1) {
           addChat(message, newDiv);
+
+          numMessages = newTab.find('span').text();
+          if (numMessages.length === 0) {
+            numMessages = 1;
+          } else {
+            numMessages = parseInt(numMessages) + 1;
+          }
+          if (!isFirstCall){
+            newTab.find('span').text((' ' + numMessages));
+          }
+
           savedMessages.push(messageId);
         }
       };
     });
+
+    // debugger;
+    // if (isFirstCall) newTab.find('span').text('');
   };
+
+  newTab.click(function() {
+    newTab.find('span').text('');
+  });
 
   setInterval(refreshMessages, 1000);
 };
