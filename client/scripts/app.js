@@ -63,7 +63,7 @@ setInterval(function() {
       chat.append(username);
       chat.append(content);
       // attach div to the dom
-      chat.prependTo($('#chats'));     
+      chat.prependTo($('#current'));     
     }
 
     refreshFriends();
