@@ -110,3 +110,8 @@ time {
 .like {
     color: red;
 }
+
+select {
+    width: 70%;
+    display: block;
+}

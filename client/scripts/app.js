@@ -6,11 +6,12 @@
 //   roomname: '4chan'
 // };
 
-var messages;
+var messages = [];
 var lastId;
 var room;
 var appendedRooms = ['lobby'];
 var friends = [];
+var followed = [];
 
 setInterval(function() {
   var isLogging = lastId ? false : true;
@@ -21,27 +22,9 @@ setInterval(function() {
     url += encodeURI(formatting);
   }
 
-  $.get(url, function(response, status) {
-    messages = response.results;
-    console.log(status);
+  refreshMessages(messages, url, $('#current'));
 
-    for (var i = messages.length - 1; i >= 0; i--) {
-      var message = messages[i];
-      if (!isLogging) {
-        if (message.objectId === lastId) {
-          isLogging = true;
-        }
-        continue;
-      } 
-
-      if (!(room === undefined || room === 'lobby') && (message.roomname !== room)) continue;
-
-      addChat(message, $('#current'));   
-    }
-
-    refreshFriends();
-    lastId = messages[0].objectId;
-  });
+  refreshFriends();
 }, 1000);
 
 $(document).ready(function() {
@@ -68,7 +51,7 @@ $(document).ready(function() {
     $('#current .chat').remove();
   });
 
-  $('body').on('click', 'a', function(e) {
+  $('body').on('click', 'a.friend', function(e) {
     e.preventDefault();
     var friend = $(this).text();
 
@@ -78,13 +61,15 @@ $(document).ready(function() {
     }
   });
 
+  $('body').on('click', 'a.follow', function(e){
+    e.preventDefault();
+  });
+
   $('.make-tab').click(makeTab);
 
   $('body').on('click', '.glyphicon', function(e) {
     $(this).toggleClass('like');
   });
-
-
 
 });
 
@@ -132,49 +117,18 @@ var makeTab = function() {
     url += encodeURI(formatting);
   }
 
-  var refreshMessages = function() {
-    var isFirstCall = savedMessages.length === 0;
-    // debugger;
-
-    $.get(url, function(response) {
-      var receivedMessages = response.results;
-      for (var i = receivedMessages.length - 1; i >= 0; i--) {
-        var message = receivedMessages[i];
-        var messageId = message.objectId;
-        if (savedMessages.indexOf(messageId) === -1) {
-          addChat(message, newDiv);
-
-          numMessages = newTab.find('span').text();
-          if (numMessages.length === 0) {
-            numMessages = 1;
-          } else {
-            numMessages = parseInt(numMessages) + 1;
-          }
-          if (!isFirstCall){
-            newTab.find('span').text((' ' + numMessages));
-          }
-
-          savedMessages.push(messageId);
-        }
-      };
-    });
-
-    // debugger;
-    // if (isFirstCall) newTab.find('span').text('');
-  };
-
   newTab.click(function() {
     newTab.find('span').text('');
   });
 
-  setInterval(refreshMessages, 1000);
+  setInterval(refreshMessages.bind(null, savedMessages, url, newDiv, newTab), 1000);
 };
 
 var addChat = function(message, location) {
   addRoom(message);
 
   // make a h4 and add the username to it
-  var username = $('<a href="#"></a>');
+  var username = $('<a href="#" class="friend"></a>');
   username.text(message.username);
 
   // add content
@@ -197,4 +151,38 @@ var addChat = function(message, location) {
   chat.append(heart);
   // attach div to the dom
   chat.prependTo(location);   
+};
+
+var refreshMessages = function(savedMessages, url, parent, tab) {
+  var isFirstCall = savedMessages.length === 0;
+
+  $.get(url, function(response) {
+    var receivedMessages = response.results;
+    for (var i = receivedMessages.length - 1; i >= 0; i--) {
+      var message = receivedMessages[i];
+      var messageId = message.objectId;
+      if (savedMessages.indexOf(messageId) === -1) {
+        addChat(message, parent);
+
+        if (tab !== undefined) {
+          numMessages = tab.find('span').text();
+
+          if (numMessages.length === 0) {
+            numMessages = 1;
+          } else {
+            numMessages = parseInt(numMessages) + 1;
+          }
+          if (!isFirstCall) {
+            tab.find('span').text((' ' + numMessages));
+          }
+        }
+      }
+
+      savedMessages.push(messageId);
+    }
+  });
+};
+
+var updateFollowed = function() {
+
 };
