@@ -26,6 +26,7 @@ setInterval(function() {
   refreshMessages(messages, url, $('#current'));
 
   refreshFriends();
+  refreshFollowButtons();
 }, 1000);
 
 /* update followers tab */
@@ -39,6 +40,7 @@ setInterval(function() {
   refreshMessages(followedMessages, url, $('#followed'));
 
   refreshFriends();
+  refreshFollowButtons();
 }, 1000);
 
 $(document).ready(function() {
@@ -75,12 +77,17 @@ $(document).ready(function() {
     }
   });
 
-  $('body').on('click', 'a.follow', function(e){
+  $('body').on('click', 'a.follow', function(e) {
     e.preventDefault();
     var user = $(this).parent().find('a.friend').text();
-    followed.push(user);
+    if (followed.indexOf(user) >= 0) {
+      followed.splice(followed.indexOf(user), 1);
+    } else {
+      followed.push(user);
+    }
     followedMessages = [];
     $('#followed div').remove();
+    refreshFollowButtons();
   });
 
   $('.make-tab').click(makeTab);
@@ -217,8 +224,18 @@ var refreshMessages = function(savedMessages, url, parent, tab) {
       savedMessages.push(messageId);
     }
   });
+
+  refreshFollowButtons();
 };
 
-var updateFollowed = function() {
-
+var refreshFollowButtons = function() {
+  $('a.follow').each(function() {
+    var user = $(this).parent().find('.friend').text();
+    var isFollowed = followed.indexOf(user) > -1;
+    if (isFollowed) {
+      $(this).text('Unfollow');
+    } else {
+      $(this).text('Follow Me');
+    }
+  });
 };
