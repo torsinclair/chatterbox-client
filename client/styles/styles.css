@@ -5,14 +5,31 @@ body {
     font-family: arial, sans-serif;
 }
 
+.container {
+    width: 90%;
+    max-width: 900px;
+}
+
 #main, #chats {
-    width: 500px;
     margin: auto;
     text-align: left;
     background: white;
     padding: 50px 60px;
     border: solid #ddd;
     border-width: 0 1px 1px 1px;
+}
+
+#main, .profile {
+    position: relative;
+    top: 20px;
+}
+
+.profile {
+    background-color: white;
+    height: 500px;
+    border: 1px solid #ddd;
+    position: relative;
+    top: 20px;
 }
 
 #main h1 {
@@ -118,4 +135,15 @@ select {
 
 .follow {
     float: right;
+}
+
+.profile img {
+    height: 150px;
+    border: 2px solid #333;
+    display: block;
+    margin: 20px auto;
+}
+
+.profile input {
+    margin: auto;
 }
