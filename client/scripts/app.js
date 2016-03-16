@@ -12,17 +12,31 @@ var room;
 var appendedRooms = ['lobby'];
 var friends = [];
 var followed = [];
+var followedMessages = [];
 
+/* update current tab */
 setInterval(function() {
-  var isLogging = lastId ? false : true;
-
   var url = 'https://api.parse.com/1/classes/messages';
   if (!(room === undefined || room === 'lobby')) {
     var formatting = '?where={"roomname":"' + room + '"}';
     url += encodeURI(formatting);
+    // debugger;
   }
 
   refreshMessages(messages, url, $('#current'));
+
+  refreshFriends();
+}, 1000);
+
+/* update followers tab */
+setInterval(function() {
+  var url = 'https://api.parse.com/1/classes/messages';
+  // debugger;
+  var formatting = '?where={"username": {"$in": ' + JSON.stringify(followed) + '}}&order=-createdAt';
+  url += encodeURI(formatting);
+  console.log(url);
+  // debugger;
+  refreshMessages(followedMessages, url, $('#followed'));
 
   refreshFriends();
 }, 1000);
@@ -63,6 +77,10 @@ $(document).ready(function() {
 
   $('body').on('click', 'a.follow', function(e){
     e.preventDefault();
+    var user = $(this).parent().find('a.friend').text();
+    followed.push(user);
+    followedMessages = [];
+    $('#followed div').remove();
   });
 
   $('.make-tab').click(makeTab);
@@ -142,6 +160,7 @@ var addChat = function(message, location) {
 
   // add an icon to message
   var heart = $('<span class="glyphicon glyphicon-heart"></span>');
+  var follow = $('<a href="#" class="follow">Follow Me</a>');
 
   // make a div for the chat and add the above to it
   var chat = $('<div class="chat"></div>');
@@ -149,6 +168,7 @@ var addChat = function(message, location) {
   chat.append(time);
   chat.append(content);
   chat.append(heart);
+  chat.append(follow);
   // attach div to the dom
   chat.prependTo(location);   
 };

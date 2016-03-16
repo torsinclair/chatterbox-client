@@ -115,3 +115,7 @@ select {
     width: 70%;
     display: block;
 }
+
+.follow {
+    float: right;
+}
